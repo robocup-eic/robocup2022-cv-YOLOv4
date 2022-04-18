@@ -24,11 +24,11 @@ from utils.general import *
 
 #path
 CONFIG_PATH = 'cfg/'
-WEIGHTS_PATH = CONFIG_PATH + 'yolov4.weigths'
+WEIGHTS_PATH = CONFIG_PATH + 'yolov4.weights'
 NAMES_PATH = CONFIG_PATH + 'custom.names'
-DEVICE = "gpu"
+DEVICE = "" #'gpu' for socket and "" for colab
 CFG_PATH = CONFIG_PATH + 'yolov4.cfg'
-IMAGE_SIZE = 640
+IMAGE_SIZE = 416
 
 class ObjectDetection:
     
@@ -110,19 +110,19 @@ class ObjectDetection:
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], input_image.shape).round()
 
                 # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += '%g %ss, ' % (n, self.names[int(c)])  # add to string
+                # for c in det[:, -1].unique():
+                #     n = (det[:, -1] == c).sum()  # detections per class
+                #     s += '%g %ss, ' % (n, self.names[int(c)])  # add to string
 
                 # Write results
                 for *xyxy, conf, cls in det:
                     # Add bbox to image
                     label = '%s %.2f' % (self.names[int(cls)], conf)
-                    plot_one_box(xyxy, input_image, label=label, color=self.colors[int(cls)], line_thickness=3)
+                    plot_one_box(xyxy, input_image, label=label, color=self.colors[int(cls)], line_thickness=2)
 
         # Print time (inference + NMS)
         print('{}Done. {:.3} s'.format(s, time.time() - t0))
-        
+        input_image = cv2.cvtColor(input_image, cv2.COLOR_RGB2BGR)
         return input_image
     
     def get_bbox(self, input_image):
