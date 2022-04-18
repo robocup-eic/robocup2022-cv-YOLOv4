@@ -10,6 +10,10 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+generate_test.py
+generate_train.py
+test.py
+train.py
 build/
 develop-eggs/
 dist/
