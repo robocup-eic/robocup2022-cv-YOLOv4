@@ -13,6 +13,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+testobj.py
 generate_test.py
 generate_train.py
 test.py
