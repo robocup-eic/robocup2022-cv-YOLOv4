@@ -122,7 +122,7 @@ class ObjectDetection:
 
         # Print time (inference + NMS)
         print('{}Done. {:.3} s'.format(s, time.time() - t0))
-        input_image = cv2.cvtColor(input_image, cv2.COLOR_RGB2BGR)
+        
         return input_image
     
     def get_bbox(self, input_image):
@@ -192,14 +192,20 @@ class ObjectDetection:
         # Print time (inference + NMS)
         print('{}Done. {:.3} s'.format(s, time.time() - t0))
         
-        return input_image
+        return bbox_list
 
     def preprocess(self, img):
         npimg = np.array(img)
         image = npimg.copy()
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         return image
-
+    
+# def test():
+#     OD = ObjectDetection()
+#     result_image = OD.detect('data\samples\bus.jpg')
+#     result_box = OD.get_bbox('data\samples\bus.jpg')
+#     print(result_image)
+#     print(result_box)
 
 # if __name__ == '__main__':
-#     main()
+#     test()
