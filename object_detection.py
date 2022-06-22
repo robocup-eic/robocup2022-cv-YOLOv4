@@ -202,8 +202,9 @@ class ObjectDetection:
     
 # def test():
 #     OD = ObjectDetection()
-#     result_image = OD.detect('data\samples\bus.jpg')
-#     result_box = OD.get_bbox('data\samples\bus.jpg')
+#     with torch.no_grad() :
+#       result_image = OD.detect('data\samples\bus.jpg')
+#       result_box = OD.get_bbox('data\samples\bus.jpg')
 #     print(result_image)
 #     print(result_box)
 
