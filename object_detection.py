@@ -30,6 +30,8 @@ DEVICE = "" #'gpu' for socket and "" for colab
 CFG_PATH = CONFIG_PATH + 'yolov4.cfg'
 IMAGE_SIZE = 416
 
+@torch.no_grad()
+
 class ObjectDetection:
     
     def __init__(self):
@@ -65,22 +67,7 @@ class ObjectDetection:
     def detect(self,input_image):
 
         #preprocess image
-        input_image = self.preprocess(input_image)
-        
-        # Run inference
-        t0 = time.time()
-        # init img
-        img = torch.zeros((1, 3, IMAGE_SIZE, IMAGE_SIZE), device=self.device)  
-        # run once
-        _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None 
-        
-        # Padded resize
-        img = letterbox(input_image, new_shape=IMAGE_SIZE, auto_size=32)[0]
-
-        # Convert 
-        # BGR to RGB, to 3x416x416
-        img = img[:, :, ::-1].transpose(2, 0, 1) 
-        img = np.ascontiguousarray(img)
+        img = self.preprocess(input_image)
         
         print("recieving image with shape {}".format(img.shape))
 
@@ -122,31 +109,16 @@ class ObjectDetection:
 
         # Print time (inference + NMS)
         print('{}Done. {:.3} s'.format(s, time.time() - t0))
-        input_image = cv2.cvtColor(input_image, cv2.COLOR_RGB2BGR)
+        
         return input_image
     
     def get_bbox(self, input_image):
         
         #preprocess image
-        input_image = self.preprocess(input_image)
+        img = self.preprocess(input_image)
         
         # object bbox list
         bbox_list = []
-        
-        # Run inference
-        t0 = time.time()
-        # init img
-        img = torch.zeros((1, 3, IMAGE_SIZE, IMAGE_SIZE), device=self.device)  
-        # run once
-        _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None 
-        
-        # Padded resize
-        img = letterbox(input_image, new_shape=IMAGE_SIZE, auto_size=32)[0]
-
-        # Convert 
-        # BGR to RGB, to 3x416x416
-        img = img[:, :, ::-1].transpose(2, 0, 1) 
-        img = np.ascontiguousarray(img)
         
         print("recieving image with shape {}".format(img.shape))
 
@@ -175,10 +147,10 @@ class ObjectDetection:
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], input_image.shape).round()
 
-                # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += '%g %ss, ' % (n, self.names[int(c)])  # add to string
+#                 # Print results
+#                 for c in det[:, -1].unique():
+#                     n = (det[:, -1] == c).sum()  # detections per class
+#                     s += '%g %ss, ' % (n, self.names[int(c)])  # add to string
 
                 # Write results
                 for *xyxy, conf, cls in det:
@@ -192,14 +164,21 @@ class ObjectDetection:
         # Print time (inference + NMS)
         print('{}Done. {:.3} s'.format(s, time.time() - t0))
         
-        return input_image
+        return bbox_list
 
     def preprocess(self, img):
-        npimg = np.array(img)
-        image = npimg.copy()
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        return image
-
+        img = letterbox(img, new_shape=IMAGE_SIZE, auto_size=32)[0]
+        img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+        img = np.ascontiguousarray(img)
+        return img
+    
+# def test():
+#     OD = ObjectDetection()
+#     with torch.no_grad() :
+#       result_image = OD.detect('data\samples\bus.jpg')
+#       result_box = OD.get_bbox('data\samples\bus.jpg')
+#     print(result_image)
+#     print(result_box)
 
 # if __name__ == '__main__':
-#     main()
+#     test()
