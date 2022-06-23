@@ -30,6 +30,8 @@ DEVICE = "" #'gpu' for socket and "" for colab
 CFG_PATH = CONFIG_PATH + 'yolov4.cfg'
 IMAGE_SIZE = 416
 
+@torch.no_grad()
+
 class ObjectDetection:
     
     def __init__(self):
