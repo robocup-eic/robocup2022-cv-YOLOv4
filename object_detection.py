@@ -175,10 +175,10 @@ class ObjectDetection:
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], input_image.shape).round()
 
-                # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += '%g %ss, ' % (n, self.names[int(c)])  # add to string
+#                 # Print results
+#                 for c in det[:, -1].unique():
+#                     n = (det[:, -1] == c).sum()  # detections per class
+#                     s += '%g %ss, ' % (n, self.names[int(c)])  # add to string
 
                 # Write results
                 for *xyxy, conf, cls in det:
