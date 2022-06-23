@@ -67,22 +67,7 @@ class ObjectDetection:
     def detect(self,input_image):
 
         #preprocess image
-        input_image = self.preprocess(input_image)
-        
-        # Run inference
-        t0 = time.time()
-        # init img
-        img = torch.zeros((1, 3, IMAGE_SIZE, IMAGE_SIZE), device=self.device)  
-        # run once
-        _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None 
-        
-        # Padded resize
-        img = letterbox(input_image, new_shape=IMAGE_SIZE, auto_size=32)[0]
-
-        # Convert 
-        # BGR to RGB, to 3x416x416
-        img = img[:, :, ::-1].transpose(2, 0, 1) 
-        img = np.ascontiguousarray(img)
+        img = self.preprocess(input_image)
         
         print("recieving image with shape {}".format(img.shape))
 
@@ -130,25 +115,10 @@ class ObjectDetection:
     def get_bbox(self, input_image):
         
         #preprocess image
-        input_image = self.preprocess(input_image)
+        img = self.preprocess(input_image)
         
         # object bbox list
         bbox_list = []
-        
-        # Run inference
-        t0 = time.time()
-        # init img
-        img = torch.zeros((1, 3, IMAGE_SIZE, IMAGE_SIZE), device=self.device)  
-        # run once
-        _ = self.model(img.half() if self.half else img) if self.device.type != 'cpu' else None 
-        
-        # Padded resize
-        img = letterbox(input_image, new_shape=IMAGE_SIZE, auto_size=32)[0]
-
-        # Convert 
-        # BGR to RGB, to 3x416x416
-        img = img[:, :, ::-1].transpose(2, 0, 1) 
-        img = np.ascontiguousarray(img)
         
         print("recieving image with shape {}".format(img.shape))
 
@@ -197,10 +167,10 @@ class ObjectDetection:
         return bbox_list
 
     def preprocess(self, img):
-        npimg = np.array(img)
-        image = npimg.copy()
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        return image
+        img = letterbox(img, new_shape=IMAGE_SIZE, auto_size=32)[0]
+        img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+        img = np.ascontiguousarray(img)
+        return img
     
 # def test():
 #     OD = ObjectDetection()
